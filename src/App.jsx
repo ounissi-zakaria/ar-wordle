@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import logo from './logo.svg'
 import help from './help_black_24dp.svg'
 import backSpace from "./keyboard_backspace_black_24dp.svg"
 import returnKey from "./keyboard_return_black_24dp.svg"
@@ -10,9 +9,9 @@ const horof = "ّضصثقفغعهخحجدشسيبلاتنمكطذئءؤرىةو�
 function Header() {
   return (
     <header className='flex w-screen px-6 py-2 shadow-md h-14'>
-      <div className='h-full m-auto'>
-        <img className='h-full' src={logo} alt="شعار الموقع" />
-      </div>
+      <h1 className='m-auto font-mono font-black text-4xl'>
+        كلمات
+      </h1>
       <button className='h-full'>
         <img src={help} alt="مساعدة" title='مساعدة' />
       </button>
@@ -44,7 +43,7 @@ function WordRow({ word }) {
 
 function Tile({ letter }) {
   return (
-    <div className='text-4xl font-black text-center border-2 border-gray-400 rounded bg-red-50 w-14 aspect-square' >
+    <div className='text-4xl font-black text-center border-2 border-gray-400 rounded w-14 aspect-square' >
       {letter}
     </div>
   )
@@ -77,13 +76,17 @@ function Main() {
   const [wordsList, setWordsList] = useState([])
   const [currentWord, setCurrentWord] = useState("")
   const [submittedWords, setSubmittedWords] = useState([])
+  const [targetWords, setTargetWord] = useState("")
 
   useEffect(
     () => {
       fetch(wordsFile).then(
         response => response.text()
       ).then(
-        content => setWordsList(content.split("\r\n"))
+        (content) => {
+          setWordsList(content.split("\r\n"))
+          setTargetWord()
+        }
       )
     }
     , [])
