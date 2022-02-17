@@ -49,28 +49,47 @@ function Tile({ letter }) {
   )
 }
 
-function Keyboard() {
+function Keyboard({ setCurrentWord, currentWord, submittedWords, setSubmittedWords, wordsList }) {
   return (
     <section className='grid w-full max-w-lg grid-cols-12 grid-rows-3 gap-1'>
-      {horof.map((harf) => <KeyButton key={harf}>{harf}</KeyButton>)}
-      <KeyButton>
+      {horof.map((harf) => <KeyButton key={harf} onClick={handleKeyClick} currentWord={currentWord} setCurrentWord={setCurrentWord}>{harf}</KeyButton>)}
+      <KeyButton
+        onClick={(children, currentWord, setCurrentWord) => {
+          if ((currentWord.length == 5) && wordsList.includes(currentWord)) {
+            setSubmittedWords([...submittedWords, currentWord])
+            setCurrentWord("")
+          }
+        }}
+        currentWord={currentWord} setCurrentWord={setCurrentWord}>
         <img src={returnKey} alt="وافق على الكلمة" />
       </KeyButton>
-      <KeyButton className="col-start-1 row-start-3">
+      <KeyButton className="col-start-1 row-start-3" currentWord={currentWord} setCurrentWord={setCurrentWord}
+        onClick={(children, currentWord, setCurrentWord) => setCurrentWord(currentWord.slice(0, -1))}>
         <img src={backSpace} alt="احذف اخر حرف" />
       </KeyButton>
 
     </section>
   )
 }
-function KeyButton({ children, className }) {
+function KeyButton({ children, className, onClick, currentWord, setCurrentWord }) {
   return (
-    <div className={'py-4 px-0.5 font-bold text-center bg-gray-200 rounded-md' + className}>
+    <button className={'py-4 px-0.5 font-bold bg-gray-200 rounded-md' + className} onClick={event => onClick(children, currentWord, setCurrentWord)}>
       {children}
-    </div>
+    </button>
   )
 }
 
+function handleKeyClick(harf, currentWord, setCurrentWord) {
+  // trigger change effect
+  let nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set
+  let input = document.querySelector("#input")
+
+  nativeInputValueSetter.call(input, currentWord + harf);
+
+  var ev = new Event('input', { bubbles: true });
+  input.dispatchEvent(ev);
+
+}
 
 function Main() {
   const [wordsList, setWordsList] = useState([])
@@ -84,14 +103,16 @@ function Main() {
         response => response.text()
       ).then(
         (content) => {
-          setWordsList(content.split("\r\n"))
-          setTargetWord()
+          let words = content.split("\r\n")
+          setWordsList(words)
+          let word = words[0]
+          setTargetWord(word)
         }
       )
     }
     , [])
   return (
-    <main >
+    <main className='grid gap-4 my-4 justify-items-center place-items-center'>
 
       <form className='w-0 h-0 opacity-0'
         onSubmit={event => handleSubmit(event, currentWord, wordsList, submittedWords, setSubmittedWords, setCurrentWord)} >
@@ -100,10 +121,10 @@ function Main() {
           onChange={event => handleChange(event, currentWord, setCurrentWord)} />
         <input className='w-0 h-0 opacity-0' type="submit" value="" />
       </form>
-      <label htmlFor="input" className='grid gap-4 my-4 justify-items-center place-items-center'>
+      <label htmlFor="input">
         <Words currentWord={currentWord} submittedWords={submittedWords} />
-        <Keyboard />
       </label>
+      <Keyboard setCurrentWord={setCurrentWord} currentWord={currentWord} submittedWords={submittedWords} setSubmittedWords={setSubmittedWords} wordsList={wordsList} />
     </main>
   )
 }
