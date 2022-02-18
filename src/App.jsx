@@ -37,22 +37,23 @@ function WordRow({ word, wordMap }) {
   let tiles = Array(5).fill(undefined)
   return (
     <div className='flex gap-1'>
-      {tiles.map((tile, i) => <Tile key={i} letter={word[i] || " " /*pass letter or empty string*/} score={wordMap[i]} />)}
+      {tiles.map((tile, i) => <Tile key={i} id={i} letter={word[i] || " " /*pass letter or empty string*/} score={wordMap[i]} />)}
     </div>
   )
 }
 
-function Tile({ letter, score }) {
+function Tile({ letter, score, id }) {
   let color = ""
   if (score == 0) {
-    color = "bg-neutral-500 text-white"
+    color = " bg-neutral-500 text-white delay-"
   } else if (score == 1) {
-    color = "bg-amber-400 text-white"
+    color = " bg-amber-400 text-white delay-"
   } else if (score == 2) {
-    color = "bg-emerald-500 text-white"
+    color = " bg-emerald-500 text-white delay-"
   }
+  color = color + id * 100
   return (
-    <div className={'bg- text-4xl font-black text-center border-2 border-gray-400 rounded w-14 aspect-square ' + color} >
+    <div className={'transition-colors duration-500 text-4xl font-black text-center border-2 border-gray-400 rounded w-14 aspect-square ' + color} >
       {letter}
     </div>
   )
@@ -84,7 +85,7 @@ function Keyboard({ setCurrentWord, currentWord, submittedWords, setSubmittedWor
   )
 }
 function KeyButton({ children, className, onClick, currentWord, setCurrentWord, score }) {
-  let color = ""
+  let color = " bg-gray-200"
   if (score == 0) {
     color = " bg-neutral-500 text-white"
   } else if (score == 1) {
@@ -93,7 +94,7 @@ function KeyButton({ children, className, onClick, currentWord, setCurrentWord, 
     color = " bg-emerald-500 text-white"
   }
   return (
-    <button className={'py-4 px-0.5 font-bold bg-gray-200 rounded-md ' + className + color} onClick={event => onClick(children, currentWord, setCurrentWord)}>
+    <button className={'py-4 px-0.5 font-bold rounded-md ' + className + color} onClick={event => onClick(children, currentWord, setCurrentWord)}>
       {children}
     </button>
   )
