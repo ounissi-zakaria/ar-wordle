@@ -6,12 +6,13 @@ export const horof = "ّضصثقفغعهخحجدشسيبلاتنمكطذئءؤر
 
 
 function App() {
-  const [gameOver, setGameOver] = useState(false);
   const [targetWord, setTargetWord] = useState("");
+  const [statsModal, setStatsModal] = useState(false)
+
   return (
     <>
-      <Header gameOver={gameOver} targetWord={targetWord} />
-      <Main gameOver={gameOver} setGameOver={setGameOver} targetWord={targetWord} setTargetWord={setTargetWord} />
+      <Header targetWord={targetWord} statsModal={statsModal} setStatsModal={setStatsModal} />
+      <Main targetWord={targetWord} setTargetWord={setTargetWord} setStatsModal={setStatsModal} />
     </>
   )
 }

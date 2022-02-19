@@ -4,9 +4,10 @@ import { Words } from './Words';
 import { Keyboard } from './Keyboard'
 import { horof } from "../App"
 
-export function Main({ gameOver, setGameOver, targetWord, setTargetWord }) {
+export function Main({ targetWord, setTargetWord, setStatsModal }) {
   const [wordsList, setWordsList] = useState([]);
   const [currentWord, setCurrentWord] = useState("");
+  const [gameOver, setGameOver] = useState(false);
   const [submittedWords, setSubmittedWords] = useState([]);
   const [submittedWordsMaps, setSubmittedWordsMaps] = useState([]); // state of each letter in submitted words
   const [horofMap, setHorofMap] = useState({}); // state of each letter in the alphabet
@@ -63,7 +64,7 @@ export function Main({ gameOver, setGameOver, targetWord, setTargetWord }) {
           handleSubmit(event, currentWord, wordsList, submittedWords,
             setSubmittedWords, setCurrentWord, submittedWordsMaps,
             setSubmittedWordsMaps, horofMap, setHorofMap, targetWord,
-            gameOver, setGameOver);
+            gameOver, setGameOver, setStatsModal);
         }}>
         <input className='w-0 h-0 opacity-0'
           id="input" value={currentWord}
@@ -94,7 +95,7 @@ function handleSubmit(event, currentWord, wordsList,
   submittedWords, setSubmittedWords, setCurrentWord,
   submittedWordsMaps, setSubmittedWordsMaps,
   horofMap, setHorofMap, targetWord,
-  gameOver, setGameOver) {
+  gameOver, setGameOver, setStatsModal) {
   event.preventDefault()
   if ((currentWord.length == 5) && wordsList.includes(currentWord) && !gameOver) {
     let map = new Array(5).fill(0)
@@ -125,6 +126,7 @@ function handleSubmit(event, currentWord, wordsList,
     }
     if ((currentWord == targetWord) || (submittedWords.length == 5)) {
       setGameOver(true)
+      setStatsModal(true)
       localStorage.setItem("rounds", (localStorage["rounds"] || 0) + 1)
       if (currentWord == targetWord) {
         localStorage.setItem("wins", (localStorage["wins"] || 0) + 1)

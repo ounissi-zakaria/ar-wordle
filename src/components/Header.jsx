@@ -3,9 +3,8 @@ import example1 from "../example-1.png";
 import statIcon from "../bar_chart_black_24dp.svg"
 import { useState } from 'react';
 
-export function Header({ gameOver, targetWord }) {
+export function Header({ targetWord, statsModal, setStatsModal }) {
     const [helpModal, setHelpModal] = useState(false)
-    const [statsModal, setStatsModal] = useState(true)
 
     let isHelp = helpModal ? "" : "hidden";
 
@@ -58,12 +57,12 @@ export function Header({ gameOver, targetWord }) {
                     <button className='absolute top-0 text-lg font-bold ' onClick={() => setHelpModal(false)}>x</button>
                 </div>
             </div>
-            <GameOverScreen gameOver={gameOver} targetWord={targetWord} statsModal={statsModal} setStatsModal={setStatsModal} />
+            <GameOverScreen targetWord={targetWord} statsModal={statsModal} setStatsModal={setStatsModal} />
         </header>);
 }
 
-function GameOverScreen({ gameOver, targetWord, statsModal, setStatsModal }) {
-    if (gameOver && statsModal) {
+function GameOverScreen({ targetWord, statsModal, setStatsModal }) {
+    if (statsModal) {
         return (
             <div className={'fixed inset-0 grid bg-black/30 place-items-center'}>
                 <div className='absolute px-4 py-8 m-auto space-y-4 bg-white border rounded border-stone-100'>
