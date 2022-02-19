@@ -3,6 +3,7 @@ import wordsFile from "../5-letter-ar-words.txt";
 import { Words } from './Words';
 import { Keyboard } from './Keyboard'
 import { horof } from "../App"
+
 export function Main() {
   const [wordsList, setWordsList] = useState([]);
   const [currentWord, setCurrentWord] = useState("");
@@ -20,8 +21,12 @@ export function Main() {
 
   useEffect(
     () => {
+      if (isNaN(lastIndex)) {
+        localStorage.setItem("lastIndex", index);
+      }
       if (localStorage["wordsList"]) {
-        setWordsList(localStorage["wordsList"].split(","));
+        const words = localStorage["wordsList"].split(",")
+        setWordsList(words);
         if (lastIndex == index) {
           setGameOver(localStorage["gameOver"] === "true");
           setHorofMap(JSON.parse(localStorage["horofMap"]));
@@ -30,6 +35,7 @@ export function Main() {
         } else {
           localStorage.setItem("lastIndex", index);
         }
+        setTargetWord(words[index % words.length])
       } else {
         fetch(wordsFile).then(
           response => response.text()
@@ -38,7 +44,7 @@ export function Main() {
             let words = content.split("\r\n");
             setWordsList(words);
             localStorage.setItem("wordsList", words);
-
+            setTargetWord(words[index % words.length])
           }
         );
       }
@@ -46,9 +52,6 @@ export function Main() {
     []);
 
   useEffect(() => {
-    if (!targetWord) {
-      setTargetWord(wordsList[Number(localStorage["lastIndex"]) % wordsList.length]);
-    }
     localStorage.setItem("gameOver", gameOver);
     localStorage.setItem("horofMap", JSON.stringify(horofMap));
     localStorage.setItem("submittedWords", submittedWords);
@@ -106,7 +109,6 @@ function handleSubmit(event, currentWord, wordsList,
     // if it's not in the target it has a score of 0
     // if it's in the word but is not placed correctly it has score of 1
     // if it's in the word and in the correct place it has score of 2
-
     for (let i = 0; i < 5; i++) {
       horofMap[cw[i]] = 0
       if (cw[i] == tw[i]) {
@@ -124,7 +126,7 @@ function handleSubmit(event, currentWord, wordsList,
         tw = tw.replace(cw[i], "")
       }
     }
-    if ((currentWord == targetWord) || (submittedWords.lenght == 5)) {
+    if ((currentWord == targetWord) || (submittedWords.length == 5)) {
       setGameOver(true)
     }
     setSubmittedWords([...submittedWords, currentWord])
