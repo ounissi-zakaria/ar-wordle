@@ -130,12 +130,12 @@ function handleSubmit(event, currentWord, wordsList,
     if ((currentWord == targetWord) || (submittedWords.length == 5)) {
       setGameOver(true)
       setStatsModal(true)
-      localStorage.setItem("rounds", (localStorage["rounds"] || 0) + 1)
+      localStorage.setItem("rounds", (Number(localStorage["rounds"]) || 0) + 1)
       if (currentWord == targetWord) {
-        localStorage.setItem("wins", (localStorage["wins"] || 0) + 1)
+        localStorage.setItem("wins", (Number(localStorage["wins"]) || 0) + 1)
         localStorage.setItem(submittedWords.length + 1, (localStorage[submittedWords.length + 1] || 0) + 1)
       } else {
-        localStorage.setItem("losses", (localStorage["losses"] || 0) + 1)
+        localStorage.setItem("losses", (Number(localStorage["losses"]) || 0) + 1)
       }
     }
     setSubmittedWords([...submittedWords, currentWord])
