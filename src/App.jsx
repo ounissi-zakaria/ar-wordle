@@ -144,7 +144,8 @@ function Main() {
         }} >
         <input className='w-0 h-0 opacity-0'
           id="input" value={currentWord}
-          onChange={event => handleChange(event, currentWord, setCurrentWord, gameOver)} />
+          onChange={event => handleChange(event, currentWord, setCurrentWord, gameOver)}
+          autoFocus="autofocus" />
         <input className='w-0 h-0 opacity-0' type="submit" value="" />
       </form>
       <label htmlFor="input">
