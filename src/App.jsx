@@ -120,18 +120,26 @@ function Main() {
 
   useEffect(
     () => {
-      fetch(wordsFile).then(
-        response => response.text()
-      ).then(
-        (content) => {
-          let words = content.split("\r\n")
-          setWordsList(words)
-          let word = words[0]
-          setTargetWord(word)
-        }
-      )
+      if (localStorage["wordsList"]) {
+        setWordsList(localStorage["wordsList"].split(","))
+      } else {
+        fetch(wordsFile).then(
+          response => response.text()
+        ).then(
+          (content) => {
+            let words = content.split("\r\n")
+            setWordsList(words)
+            localStorage["wordsList"] = words
+
+          }
+        )
+      }
     }
     , [])
+
+  useEffect(() => {
+    setTargetWord(wordsList[0])
+  })
   return (
     <main className='grid gap-4 my-4 justify-items-center place-items-center'>
 
@@ -174,23 +182,32 @@ function handleSubmit(event, currentWord, wordsList,
   gameOver, setGameOver) {
   event.preventDefault()
   if ((currentWord.length == 5) && wordsList.includes(currentWord) && !gameOver) {
-    let map = []
+    let map = new Array(5).fill(0)
+
+    let cw = currentWord // copy current and target word
+    let tw = targetWord
+
     // loop throuhg the letters of the entered word and score the letter 
     // if it's not in the target it has a score of 0
     // if it's in the word but is not placed correctly it has score of 1
     // if it's in the word and in the correct place it has score of 2
+
     for (let i = 0; i < 5; i++) {
-      let score = 0
-      horofMap[currentWord[i]] = 0
-      if (targetWord.includes(currentWord[i])) {
-        score++
-        horofMap[currentWord[i]] = 1
+      horofMap[cw[i]] = 0
+      if (cw[i] == tw[i]) {
+        map[i] = 2
+        horofMap[cw[i]] = 2
+        cw = cw.replace(cw[i], "_")
+        tw = tw.replace(tw[i], "_")
       }
-      if (currentWord[i] == targetWord[i]) {
-        score++
-        horofMap[currentWord[i]] = 2
+    }
+    for (let i = 0; i < 5; i++) {
+      if (cw[i] == "_") continue
+      if (tw.includes(cw[i])) {
+        map[i] = 1
+        horofMap[cw[i]] = 1
+        tw.replace(cw[i], "")
       }
-      map.push(score)
     }
     if ((currentWord == targetWord) || (submittedWords.lenght == 5)) {
       setGameOver(true)
