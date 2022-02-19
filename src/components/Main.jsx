@@ -76,6 +76,7 @@ export function Main() {
       <Keyboard setCurrentWord={setCurrentWord} currentWord={currentWord}
         submittedWords={submittedWords} setSubmittedWords={setSubmittedWords}
         wordsList={wordsList} horofMap={horofMap} gameOver={gameOver} />
+      <GameOverScreen gameOver={gameOver} targetWord={targetWord} />
     </main>
   );
 }
@@ -131,5 +132,25 @@ function handleSubmit(event, currentWord, wordsList,
     setHorofMap(horofMap)
     setCurrentWord("")
   }
+}
+
+function GameOverScreen({ gameOver, targetWord }) {
+  if (gameOver) {
+    return (
+      <div className='fixed inset-0 grid p-4 justify-items-center'>
+        <div className='flex flex-col mt-8 space-y-6 font-bold text-center'>
+          <p className='inline-block p-4 text-white rounded bg-black/70'>
+            {targetWord}
+          </p>
+          <p className='inline-block p-4 text-white rounded bg-black/70'>
+            كلمة جديدة كل يوم.
+          </p>
+        </div>
+      </div>
+    )
+  }
+  return (
+    <></>
+  )
 }
 
