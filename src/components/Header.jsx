@@ -108,7 +108,7 @@ function Distrobution() {
     return (
         <div className='flex flex-col gap-2'>
             {range.map((_, i) => {
-                if (i == 7) {
+                if (i == 6) {
                     var count = Number(localStorage["losses"]) || 0
                     var percentage = count / Number(localStorage["rounds"] || 1) * 100
                 } else {
