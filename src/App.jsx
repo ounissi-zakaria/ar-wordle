@@ -265,7 +265,7 @@ function handleSubmit(event, currentWord, wordsList,
       if (tw.includes(cw[i])) {
         map[i] = 1
         horofMap[cw[i]] = 1
-        tw.replace(cw[i], "")
+        tw = tw.replace(cw[i], "")
       }
     }
     if ((currentWord == targetWord) || (submittedWords.lenght == 5)) {
