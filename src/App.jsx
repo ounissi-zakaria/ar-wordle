@@ -9,7 +9,7 @@ const horof = "ّضصثقفغعهخحجدشسيبلاتنمكطذئءؤرىةو�
 function Header() {
   return (
     <header className='flex w-screen px-6 py-2 shadow-md h-14'>
-      <h1 className='m-auto font-mono font-black text-4xl'>
+      <h1 className='m-auto font-mono text-4xl font-black'>
         كلمات
       </h1>
       <button className='h-full'>
@@ -43,17 +43,18 @@ function WordRow({ word, wordMap }) {
 }
 
 function Tile({ letter, score, id }) {
+  const delays = ["", "delay-100", "delay-200", "delay-300", "delay-[.400s]"]
   let color = ""
   if (score == 0) {
-    color = " bg-neutral-500 text-white delay-"
+    color = " bg-neutral-500 text-white "
   } else if (score == 1) {
-    color = " bg-amber-400 text-white delay-"
+    color = " bg-amber-400 text-white "
   } else if (score == 2) {
-    color = " bg-emerald-500 text-white delay-"
+    color = " bg-emerald-500 text-white "
   }
-  color = color + id * 100
+  color = color + delays[id]
   return (
-    <div className={'transition-colors duration-500 text-4xl font-black text-center border-2 border-gray-400 rounded w-14 aspect-square ' + color} >
+    <div className={'transition-colors duration-1000 text-4xl font-black text-center border-2 border-gray-400 rounded w-14 aspect-square ' + color} >
       {letter}
     </div>
   )
