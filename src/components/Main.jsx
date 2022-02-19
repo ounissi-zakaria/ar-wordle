@@ -12,6 +12,7 @@ export function Main({ targetWord, setTargetWord, setStatsModal }) {
   const [submittedWordsMaps, setSubmittedWordsMaps] = useState([]); // state of each letter in submitted words
   const [horofMap, setHorofMap] = useState({}); // state of each letter in the alphabet
 
+  const [isLoading, setIsLoading] = useState(true)
   const today = new Date();
   const startDay = new Date("Feb 19 2022");
   let index = Math.abs(today - startDay);
@@ -35,6 +36,7 @@ export function Main({ targetWord, setTargetWord, setStatsModal }) {
           localStorage.setItem("lastIndex", index);
         }
         setTargetWord(words[index % words.length])
+        setIsLoading(false)
       } else {
         fetch(wordsFile).then(
           response => response.text()
@@ -44,6 +46,7 @@ export function Main({ targetWord, setTargetWord, setStatsModal }) {
             setWordsList(words);
             localStorage.setItem("wordsList", words);
             setTargetWord(words[index % words.length])
+            setIsLoading(false)
           }
         );
       }
@@ -69,7 +72,7 @@ export function Main({ targetWord, setTargetWord, setStatsModal }) {
         <input className='w-0 h-0 opacity-0'
           id="input" value={currentWord}
           onChange={event => handleChange(event, currentWord, setCurrentWord, gameOver)}
-          autoFocus="autofocus" autoComplete="false" />
+          autoFocus="autofocus" autoComplete="false" disabled={isLoading} />
         <input className='w-0 h-0 opacity-0' type="submit" value="" />
       </form>
       <label htmlFor="input">
