@@ -4,14 +4,12 @@ import { Words } from './Words';
 import { Keyboard } from './Keyboard'
 import { horof } from "../App"
 
-export function Main() {
+export function Main({ gameOver, setGameOver, targetWord, setTargetWord }) {
   const [wordsList, setWordsList] = useState([]);
   const [currentWord, setCurrentWord] = useState("");
   const [submittedWords, setSubmittedWords] = useState([]);
-  const [targetWord, setTargetWord] = useState("");
   const [submittedWordsMaps, setSubmittedWordsMaps] = useState([]); // state of each letter in submitted words
   const [horofMap, setHorofMap] = useState({}); // state of each letter in the alphabet
-  const [gameOver, setGameOver] = useState(false);
 
   const today = new Date();
   const startDay = new Date("Feb 19 2022");
@@ -79,7 +77,6 @@ export function Main() {
       <Keyboard setCurrentWord={setCurrentWord} currentWord={currentWord}
         submittedWords={submittedWords} setSubmittedWords={setSubmittedWords}
         wordsList={wordsList} horofMap={horofMap} gameOver={gameOver} />
-      <GameOverScreen gameOver={gameOver} targetWord={targetWord} />
     </main>
   );
 }
@@ -128,6 +125,13 @@ function handleSubmit(event, currentWord, wordsList,
     }
     if ((currentWord == targetWord) || (submittedWords.length == 5)) {
       setGameOver(true)
+      localStorage.setItem("rounds", (localStorage["rounds"] || 0) + 1)
+      if (currentWord == targetWord) {
+        localStorage.setItem("wins", (localStorage["wins"] || 0) + 1)
+        localStorage.setItem(submittedWords.length + 1, (localStorage[submittedWords.length + 1] || 0) + 1)
+      } else {
+        localStorage.setItem("losses", (localStorage["losses"] || 0) + 1)
+      }
     }
     setSubmittedWords([...submittedWords, currentWord])
     setSubmittedWordsMaps([...submittedWordsMaps, map])
@@ -135,24 +139,3 @@ function handleSubmit(event, currentWord, wordsList,
     setCurrentWord("")
   }
 }
-
-function GameOverScreen({ gameOver, targetWord }) {
-  if (gameOver) {
-    return (
-      <div className='fixed inset-0 grid p-4 justify-items-center'>
-        <div className='flex flex-col mt-8 space-y-6 font-bold text-center'>
-          <p className='inline-block p-4 text-white rounded bg-black/70'>
-            {targetWord}
-          </p>
-          <p className='inline-block p-4 text-white rounded bg-black/70'>
-            كلمة جديدة كل يوم.
-          </p>
-        </div>
-      </div>
-    )
-  }
-  return (
-    <></>
-  )
-}
-
