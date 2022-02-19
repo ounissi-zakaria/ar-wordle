@@ -40,7 +40,7 @@ export function Main({ targetWord, setTargetWord, setStatsModal }) {
           response => response.text()
         ).then(
           (content) => {
-            let words = content.split("\r\n");
+            let words = content.split("\n");
             setWordsList(words);
             localStorage.setItem("wordsList", words);
             setTargetWord(words[index % words.length])
