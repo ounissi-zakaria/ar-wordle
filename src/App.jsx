@@ -154,13 +154,27 @@ function Main() {
   const [submittedWords, setSubmittedWords] = useState([])
   const [targetWord, setTargetWord] = useState("")
   const [submittedWordsMaps, setSubmittedWordsMaps] = useState([]) // state of each letter in submitted words
-  const [horofMap, setHorofMap] = useState([]) // state of each letter in the alphabet
+  const [horofMap, setHorofMap] = useState({}) // state of each letter in the alphabet
   const [gameOver, setGameOver] = useState(false)
+
+  const today = new Date()
+  const startDay = new Date("Feb 19 2022")
+  let index = Math.abs(today - startDay)
+  index = Math.floor(index / (1000 * 60 * 60 * 24))
+  const lastIndex = Number(localStorage["lastIndex"])
 
   useEffect(
     () => {
       if (localStorage["wordsList"]) {
         setWordsList(localStorage["wordsList"].split(","))
+        if (lastIndex == index) {
+          setGameOver(localStorage["gameOver"] === "true")
+          setHorofMap(JSON.parse(localStorage["horofMap"]))
+          setSubmittedWords(localStorage["submittedWords"].split(","))
+          setSubmittedWordsMaps(JSON.parse(localStorage["submittedWordsMaps"]))
+        } else {
+          localStorage.setItem("lastIndex", index)
+        }
       } else {
         fetch(wordsFile).then(
           response => response.text()
@@ -168,7 +182,7 @@ function Main() {
           (content) => {
             let words = content.split("\r\n")
             setWordsList(words)
-            localStorage["wordsList"] = words
+            localStorage.setItem("wordsList", words)
 
           }
         )
@@ -177,7 +191,13 @@ function Main() {
     , [])
 
   useEffect(() => {
-    setTargetWord(wordsList[4])
+    if (!targetWord) {
+      setTargetWord(wordsList[Number(localStorage["lastIndex"]) % wordsList.length])
+    }
+    localStorage.setItem("gameOver", gameOver)
+    localStorage.setItem("horofMap", JSON.stringify(horofMap))
+    localStorage.setItem("submittedWords", submittedWords)
+    localStorage.setItem("submittedWordsMaps", JSON.stringify(submittedWordsMaps))
   })
   return (
     <main className='grid gap-4 my-4 justify-items-center place-items-center'>
@@ -192,7 +212,7 @@ function Main() {
         <input className='w-0 h-0 opacity-0'
           id="input" value={currentWord}
           onChange={event => handleChange(event, currentWord, setCurrentWord, gameOver)}
-          autoFocus="autofocus" />
+          autoFocus="autofocus" autoComplete="false" />
         <input className='w-0 h-0 opacity-0' type="submit" value="" />
       </form>
       <label htmlFor="input">
