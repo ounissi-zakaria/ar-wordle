@@ -60,32 +60,32 @@ function Tile({ letter, score, id }) {
   )
 }
 
-function Keyboard({ setCurrentWord, currentWord, submittedWords, setSubmittedWords, wordsList, horofMap }) {
+function Keyboard({ setCurrentWord, currentWord, submittedWords, setSubmittedWords, wordsList, horofMap, gameOver }) {
   return (
     <section className='grid w-full max-w-lg grid-cols-12 grid-rows-3 gap-1'>
       {horof.map((harf) => {
         return <KeyButton key={harf} onClick={handleKeyClick} currentWord={currentWord}
-          setCurrentWord={setCurrentWord} score={horofMap[harf]}>{harf}</KeyButton>
+          setCurrentWord={setCurrentWord} score={horofMap[harf]} disabled={gameOver}>{harf}</KeyButton>
       })}
       <KeyButton
         onClick={(children, currentWord, setCurrentWord) => {
-          if ((currentWord.length == 5) && wordsList.includes(currentWord)) {
-            setSubmittedWords([...submittedWords, currentWord])
-            setCurrentWord("")
-          }
+          // trigger submit event 
+          let e = new Event("submit", { bubbles: true })
+          let form = document.querySelector("main > form")
+          form.dispatchEvent(e)
         }}
-        currentWord={currentWord} setCurrentWord={setCurrentWord} score={undefined}>
+        currentWord={currentWord} setCurrentWord={setCurrentWord} score={undefined} disabled={gameOver}>
         <img src={returnKey} alt="وافق على الكلمة" />
       </KeyButton>
       <KeyButton score={undefined} className="col-start-1 row-start-3" currentWord={currentWord} setCurrentWord={setCurrentWord}
-        onClick={(children, currentWord, setCurrentWord) => setCurrentWord(currentWord.slice(0, -1))}>
+        onClick={(children, currentWord, setCurrentWord) => setCurrentWord(currentWord.slice(0, -1))} disabled={gameOver}>
         <img src={backSpace} alt="احذف اخر حرف" />
       </KeyButton>
 
     </section>
   )
 }
-function KeyButton({ children, className, onClick, currentWord, setCurrentWord, score }) {
+function KeyButton({ children, className, onClick, currentWord, setCurrentWord, score, disabled }) {
   let color = " bg-gray-200"
   if (score == 0) {
     color = " bg-neutral-500 text-white"
@@ -95,7 +95,8 @@ function KeyButton({ children, className, onClick, currentWord, setCurrentWord, 
     color = " bg-emerald-500 text-white"
   }
   return (
-    <button className={'py-4 px-0.5 font-bold rounded-md ' + className + color} onClick={event => onClick(children, currentWord, setCurrentWord)}>
+    <button className={'py-4 px-0.5 font-bold rounded-md ' + className + color}
+      onClick={event => onClick(children, currentWord, setCurrentWord)} disabled={disabled}>
       {children}
     </button>
   )
@@ -115,7 +116,7 @@ function Main() {
   const [targetWord, setTargetWord] = useState("")
   const [submittedWordsMaps, setSubmittedWordsMaps] = useState([]) // state of each letter in submitted words
   const [horofMap, setHorofMap] = useState([]) // state of each letter in the alphabet
-
+  const [gameOver, setGameOver] = useState(false)
 
   useEffect(
     () => {
@@ -138,11 +139,12 @@ function Main() {
         onSubmit={event => {
           handleSubmit(event, currentWord, wordsList, submittedWords,
             setSubmittedWords, setCurrentWord, submittedWordsMaps,
-            setSubmittedWordsMaps, horofMap, setHorofMap, targetWord)
+            setSubmittedWordsMaps, horofMap, setHorofMap, targetWord,
+            gameOver, setGameOver)
         }} >
         <input className='w-0 h-0 opacity-0'
           id="input" value={currentWord}
-          onChange={event => handleChange(event, currentWord, setCurrentWord)} />
+          onChange={event => handleChange(event, currentWord, setCurrentWord, gameOver)} />
         <input className='w-0 h-0 opacity-0' type="submit" value="" />
       </form>
       <label htmlFor="input">
@@ -150,16 +152,16 @@ function Main() {
       </label>
       <Keyboard setCurrentWord={setCurrentWord} currentWord={currentWord}
         submittedWords={submittedWords} setSubmittedWords={setSubmittedWords}
-        wordsList={wordsList} horofMap={horofMap} />
+        wordsList={wordsList} horofMap={horofMap} gameOver={gameOver} />
     </main>
   )
 }
 
-function handleChange(event, currentWord, setCurrentWord) {
+function handleChange(event, currentWord, setCurrentWord, gameOver) {
   const newWord = event.target.value
   const lastLetter = newWord.at(-1) // get the last letter
   // if we erase letter or add new valid letter we change the word
-  if ((newWord.length < currentWord.length) || (horof.includes(lastLetter) && currentWord.length < 5)) {
+  if ((newWord.length < currentWord.length) || (horof.includes(lastLetter) && currentWord.length < 5) && !gameOver) {
     setCurrentWord(newWord)
   }
 }
@@ -167,9 +169,10 @@ function handleChange(event, currentWord, setCurrentWord) {
 function handleSubmit(event, currentWord, wordsList,
   submittedWords, setSubmittedWords, setCurrentWord,
   submittedWordsMaps, setSubmittedWordsMaps,
-  horofMap, setHorofMap, targetWord) {
+  horofMap, setHorofMap, targetWord,
+  gameOver, setGameOver) {
   event.preventDefault()
-  if ((currentWord.length == 5) && wordsList.includes(currentWord)) {
+  if ((currentWord.length == 5) && wordsList.includes(currentWord) && !gameOver) {
     let map = []
     // loop throuhg the letters of the entered word and score the letter 
     // if it's not in the target it has a score of 0
@@ -187,6 +190,9 @@ function handleSubmit(event, currentWord, wordsList,
         horofMap[currentWord[i]] = 2
       }
       map.push(score)
+    }
+    if ((currentWord == targetWord) || (submittedWords.lenght == 5)) {
+      setGameOver(true)
     }
     setSubmittedWords([...submittedWords, currentWord])
     setSubmittedWordsMaps([...submittedWordsMaps, map])
